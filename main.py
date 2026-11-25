@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
-"""Midnight Fridge Roast: one line roasting a smart fridge that
-refuses to open after midnight.
+"""Midnight Fridge Roast (v3) — writes one roast line to entry.txt.
 
-The program writes a single line, 1-200 characters, to
-$MAKEFUN_OUTPUT_DIR/entry.txt (default /output/entry.txt).
-Python standard library only, no network calls, deterministic output.
+The line is a one-line roast of a smart fridge that refuses to open
+after midnight. Gate: UTF-8 text of 1 to 200 characters, not only
+whitespace. Output goes to $MAKEFUN_OUTPUT_DIR/entry.txt
+(default /output).
 """
 
 import os
+import sys
 
-LINE = (
-    "My fridge has a midnight curfew: one beep, the door locks, "
-    "and the screen says, 'You've had enough, champ.'"
-)
+LINE = "My fridge won't open after midnight. It just hums, 'You've already eaten today. I was there.'"
 
 
-def main():
+def main() -> int:
+    if not LINE or len(LINE) > 200:
+        print(f"entry must be 1-200 chars, got {len(LINE)}", file=sys.stderr)
+        return 1
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
-    if not (1 <= len(LINE) <= 200) or not LINE.strip():
-        raise SystemExit("entry line fails the 1-200 character gate")
-    with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8") as f:
+    path = os.path.join(out_dir, "entry.txt")
+    with open(path, "w", encoding="utf-8") as f:
         f.write(LINE)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
